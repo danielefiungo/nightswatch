@@ -33,7 +33,8 @@ export async function start(): Promise<void> {
       process.exit(0);
     });
     nightswatch.on('signal', () => {
-      options.takeSnapshot();
+      process.exit(0);
+      //options.takeSnapshot();
     });
   } catch (err) {
     log.debug('💥 ops', err);

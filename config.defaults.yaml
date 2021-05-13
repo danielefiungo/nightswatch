@@ -84,7 +84,7 @@ relying_party:
   headers:
     prefix: X-AUTH
     proxy:
-      access-token: tokenset.access_token
+      access-token: token
       id-token: tokenset.id_token
       expires-at: tokenset.expires_at
       expires-in: tokenset.expires_in

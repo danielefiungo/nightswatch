@@ -53,7 +53,7 @@ function revProxy({ upstream, routes, rewrite }: Targets): RequestHandler {
   function proxyHeaders(req: Request) {
     const { prefix, proxy } = options.snapshot().relying_party.headers;
     return map(proxy, function(value, name) {
-      return [`${prefix}-${name}`, get(req.oidc, value, '')];
+      return [`${prefix}-${name}`, get(req.uid, value, '')];
     });
   }
 
