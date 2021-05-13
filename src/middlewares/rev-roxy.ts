@@ -15,21 +15,21 @@ const debug = debugLib('nightswatch:rev-proxy');
 function revProxy({ upstream, routes, rewrite }: Targets): RequestHandler {
   const proxy_options: Options = {
     followRedirects: false,
-    target: upstream,
     changeOrigin: true,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pathRewrite: rewrite.reduce((acc: any, { match, rewrite }) => {
+    target: upstream,
+    pathRewrite: rewrite.reduce((acc, { match, rewrite }) => {
       acc[match] = rewrite;
       return acc;
-    }, {}),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }, {} as any),
     // control logging
     logLevel: 'debug',
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //router: routes.reduce((acc: any, route) => {
-    //  acc[route.path] = route.upstream;
-    //  return acc;
-    //}, {}),
+    router: routes.reduce((acc: any, route) => {
+      acc[route.path] = route.upstream;
+      return acc;
+    }, {}),
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onProxyReq: (proxyReq: ClientRequest, req: Request, res: Response) => {

@@ -2,7 +2,6 @@ import { Nightswatch } from './../utils/nightswatch';
 import express, { Express } from 'express';
 import 'express-async-errors';
 import cors from 'cors';
-import cookieSession from 'cookie-session';
 import helmet from 'helmet';
 import compression from 'compression';
 import opts from './options';
@@ -23,7 +22,6 @@ const expressApp = express()
       prettyPrint: process.env.PRETTY_PRINT === 'true' ? true : false,
     })
   );
-//.use(cookieSession(opts.snapshot().cookie));
 
 instrumentByMode(expressApp);
 
@@ -32,6 +30,7 @@ expressApp.use((req, res, next) => {
   req.log.info({ active, subject, expires }, '✅ Authenticated user');
   next();
 });
+
 expressApp.all(opts.snapshot().targets.path, revProxy(opts.snapshot().targets));
 
 export default new Nightswatch({
@@ -55,12 +54,7 @@ function instrumentByMode(expressApp: Express) {
             const [, token] = authorization.split(' ');
             return token;
           },
-          doPost: async (
-            _req,
-            url,
-            queryString,
-            options?: { headers: Record<string, string> }
-          ) => {
+          doPost: async (_req, url, queryString, options) => {
             return await axios.create().post(url, queryString, options);
           },
           logger: (req, level, msg, payload) => logger[level](msg, payload),

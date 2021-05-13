@@ -2,9 +2,7 @@ import ghii from '@ghii/ghii';
 import packageJsonLoader from '@ghii/package-json-loader';
 import yamlLoader from '@ghii/yaml-loader';
 import { IssuerEndpoints } from '@iad-os/aemon-oidc-introspect';
-import { join } from 'lodash';
 import { PackageJson, PartialDeep } from 'type-fest';
-import logger from '../utils/logger';
 
 export interface Targets {
   path: string;

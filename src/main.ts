@@ -1,7 +1,7 @@
 import waitOn from 'wait-on';
 import nightswatch from './config/nightswatch';
-import options from './config/options';
 import log from './utils/logger';
+
 (async () => {
   try {
     log.info('🔍 Running engineCheck ...');
