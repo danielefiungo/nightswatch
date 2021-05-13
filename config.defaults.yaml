@@ -84,12 +84,12 @@ relying_party:
   headers:
     prefix: X-AUTH
     proxy:
-      access-token: token
-      id-token: tokenset.id_token
-      expires-at: tokenset.expires_at
-      expires-in: tokenset.expires_in
-      sub: idtoken.sub
-      name: idtoken.name
-      email: idtoken.email
-      family-name: idtoken.family_name
-      given-name: idtoken.given_name
+      token: token
+      expiresin: expires
+      subject: subject
+      email: email
+      family-name: familyName
+      given-name: givenName
+      roles: roles
+      username: name
+      userid: username

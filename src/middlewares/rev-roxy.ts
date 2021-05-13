@@ -1,15 +1,16 @@
-import { Request, Response } from 'express';
-import { ClientRequest } from 'http';
+import { Headers } from './../config/options';
+import debugLib from 'debug';
+import { Request } from 'express';
 import {
   createProxyMiddleware,
   Options,
   RequestHandler,
 } from 'http-proxy-middleware';
+import { isNumber, round } from 'lodash';
 import get from 'lodash.get';
 import map from 'lodash.map';
 import options, { Targets } from '../config/options';
 
-import debugLib from 'debug';
 const debug = debugLib('nightswatch:rev-proxy');
 
 function revProxy({ upstream, routes, rewrite }: Targets): RequestHandler {
@@ -32,29 +33,24 @@ function revProxy({ upstream, routes, rewrite }: Targets): RequestHandler {
     }, {}),
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onProxyReq: (proxyReq: ClientRequest, req: Request, res: Response) => {
+    onProxyReq: (proxyReq, req, res) => {
       const rpHeaders = proxyHeaders(req);
       rpHeaders.forEach(([name, value]) => {
         proxyReq.setHeader(name, value);
       });
-
-      /* const { method, path, headers } = proxyReq;
-      if (process.env.TRACE_REQ) {
-        req.log = {
-          method,
-          path,
-          headers,
-          //body: req.body,
-        };
-      }*/
     },
   };
 
   function proxyHeaders(req: Request) {
     const { prefix, proxy } = options.snapshot().relying_party.headers;
-    return map(proxy, function(value, name) {
-      return [`${prefix}-${name}`, get(req.uid, value, '')];
+    const headers = map(proxy, function(value, name) {
+      let uidValue = get(req.uid, value, '');
+      if (name === 'expiresin' && isNumber(uidValue)) {
+        uidValue = round((uidValue * 1000 - Date.now()) / 1000, 0);
+      }
+      return [`${prefix}-${name}`, uidValue];
     });
+    return headers;
   }
 
   debug(proxy_options);

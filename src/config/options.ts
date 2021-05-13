@@ -56,15 +56,15 @@ export interface Rule {
 }
 
 export interface Proxy {
-  'access-token': string;
-  'id-token': string;
-  'expires-at': string;
-  'expires-in': string;
+  token: string;
+  expiresin: string;
   sub: string;
   name: string;
   email: string;
   'family-name': string;
   'given-name': string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }
 
 export interface Headers {
@@ -251,16 +251,16 @@ const options = ghii<{
             prefix: joi.string().required(),
             proxy: joi
               .object({
-                'access-token': joi.string().required(),
-                'id-token': joi.string().required(),
-                'expires-at': joi.string().required(),
-                'expires-in': joi.string().required(),
-                sub: joi.string().required(),
-                name: joi.string().required(),
+                token: joi.string().required(),
+                expiresin: joi.string().required(),
+                subject: joi.string().required(),
+                username: joi.string().required(),
+                userid: joi.string().required(),
                 email: joi.string().required(),
                 'family-name': joi.string().required(),
                 'given-name': joi.string().required(),
               })
+              .options({ allowUnknown: true })
               .required(),
           })
           .required(),
