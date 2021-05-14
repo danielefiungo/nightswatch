@@ -1,4 +1,3 @@
-import { Headers } from './../config/options';
 import debugLib from 'debug';
 import { Request } from 'express';
 import {
@@ -6,7 +5,7 @@ import {
   Options,
   RequestHandler,
 } from 'http-proxy-middleware';
-import { isNumber, round } from 'lodash';
+import { isNumber, round, toString } from 'lodash';
 import get from 'lodash.get';
 import map from 'lodash.map';
 import options, { Targets } from '../config/options';

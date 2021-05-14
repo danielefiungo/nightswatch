@@ -93,3 +93,6 @@ relying_party:
       roles: roles
       username: name
       userid: username
+      all-roles: allRoles
+      issuer: issuer
+      audience: audience
