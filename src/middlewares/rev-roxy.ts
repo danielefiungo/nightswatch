@@ -5,7 +5,6 @@ import {
   Options,
   RequestHandler,
 } from 'http-proxy-middleware';
-import { isNumber, round, toString } from 'lodash';
 import get from 'lodash.get';
 import map from 'lodash.map';
 import options, { Targets } from '../config/options';
@@ -43,11 +42,7 @@ function revProxy({ upstream, routes, rewrite }: Targets): RequestHandler {
   function proxyHeaders(req: Request) {
     const { prefix, proxy } = options.snapshot().relying_party.headers;
     const headers = map(proxy, function(value, name) {
-      let uidValue = get(req.uid, value, '');
-      if (name === 'expiresin' && isNumber(uidValue)) {
-        uidValue = round((uidValue * 1000 - Date.now()) / 1000, 0);
-      }
-      return [`${prefix}-${name}`, uidValue];
+      return [`${prefix}-${name}`, get(req.uid, value, '')];
     });
     return headers;
   }

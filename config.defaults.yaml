@@ -85,7 +85,7 @@ relying_party:
     prefix: X-AUTH
     proxy:
       token: token
-      expiresin: expires
+      expiresin: expiresIn
       subject: subject
       email: email
       family-name: familyName
