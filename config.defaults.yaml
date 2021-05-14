@@ -15,24 +15,16 @@
 #      expires: 3600
 #      issuedAt: -1
 #      active: true
+mode: access-proxy
+
 oidc:
   issuers:
-  - issuer: https://id.ecobonus.es/auth/realms/dev-gestori
-    introspection_endpoint: https://id.ecobonus.es/auth/realms/dev-gestori/protocol/openid-connect/token/introspect
+  - issuer: https://issuer.castle_black.com
+    introspection_endpoint: https://issuer.castle_black.com/introspect
     client:
-      client_id: ids-api
-      client_secret: 1e1c513f-1ccb-4c7e-bf12-827948f44f6f
-  - issuer: https://id.ecobonus.es/auth/realms/dev-operatori
-    introspection_endpoint: https://id.ecobonus.es/auth/realms/dev-operatori/protocol/openid-connect/token/introspect
-    client:
-      client_id: ids-api
-      client_secret: d108fed9-8b4a-434a-830f-77b201e06150
-# https://github.com/expressjs/cookie-session
-cookie:
-  name: nightswatch
-  keys:
-    - you_know_nothing_jon_snow
-  maxAge: 86400 #24h
+      client_id: the_wall
+      client_secret: the_key_of_the_wall
+
 targets:
   path: /**
   upstream: http://httpbin.org
@@ -47,6 +39,7 @@ storage:
   kind: InMemory
   specs:
     stdTTL: 86400 #24h
+
 server:
   # max_body_limit: 100k
   http:
@@ -56,7 +49,7 @@ server:
   https:
     enable: false
     port: 3001
-  max_header_size: 8192
+  max_header_size: 8192 #????? ndo' stata????
   proxy:
     # http://expressjs.com/en/guide/behind-proxies.html
     # loopback - 127.0.0.1/8, ::1/128
@@ -69,30 +62,34 @@ server:
     readiness: /healthcheck/ready
     liveness: /healthcheck
     timeout: 2000 #2sec
-relying_party:
-  on_success_redirect: /
-  on_fail_redirect: /
-  oidc_base_path: /oidc
-  oidc_paths:
-    login: /login
-    callback: /callback
-  rules:
-    - route: /**
-      methods:
-        - all
-  logLevel: error
-  headers:
-    prefix: X-AUTH
-    proxy:
-      token: token
-      expiresin: expiresIn
-      subject: subject
-      email: email
-      family-name: familyName
-      given-name: givenName
-      roles: roles
-      username: name
-      userid: username
-      all-roles: allRoles
-      issuer: issuer
-      audience: audience
+
+logLevel: error
+headers:
+  proxy:
+    token: token
+    expiresin: expiresIn
+    subject: subject
+    email: email
+    family-name: familyName
+    given-name: givenName
+    roles: roles
+    username: name
+    userid: username
+    all-roles: allRoles
+    issuer: issuer
+    audience: audience
+  noProxy:
+    - authorization
+
+# RP MODE
+#relying_party:
+#  on_success_redirect: /
+#  on_fail_redirect: /
+#  oidc_base_path: /oidc
+#  oidc_paths:
+#    login: /login
+#    callback: /callback
+#  rules:
+#    - route: /**
+#      methods:
+#        - all

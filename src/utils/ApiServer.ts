@@ -1,9 +1,8 @@
-import log from './logger';
 import { createTerminus, TerminusOptions } from '@godaddy/terminus';
-import { isNumber, reject } from 'lodash';
-import { EventEmitter } from 'events';
-import http, { ServerOptions, RequestListener, Server } from 'http';
+import http, { RequestListener, Server, ServerOptions } from 'http';
+import { isNumber } from 'lodash';
 import { AddressInfo } from 'net';
+import log from './logger';
 
 export type ServerConfigs = {
   requestListener: RequestListener;

@@ -56,13 +56,6 @@ export interface Rule {
 }
 
 export interface Proxy {
-  token: string;
-  expiresin: string;
-  sub: string;
-  name: string;
-  email: string;
-  'family-name': string;
-  'given-name': string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
@@ -70,6 +63,7 @@ export interface Proxy {
 export interface Headers {
   prefix: string;
   proxy: Proxy;
+  noProxy: string[];
 }
 
 export interface RelyingParty {
@@ -78,8 +72,6 @@ export interface RelyingParty {
   oidc_base_path: string;
   oidc_paths: OidcPaths;
   rules: Rule[];
-  logLevel: 'debug' | 'info' | 'warn' | 'error' | 'silent';
-  headers: Headers;
 }
 
 const options = ghii<{
@@ -91,11 +83,12 @@ const options = ghii<{
   oidc: {
     issuers: IssuerEndpoints[];
   };
-  cookie: CookieSessionInterfaces.CookieSessionOptions; // | 'only-auth-bearer';
+  logLevel: 'debug' | 'info' | 'warn' | 'error' | 'silent';
+  headers: Headers;
   targets: Targets;
   storage: Storage;
   server: Server;
-  relying_party: RelyingParty;
+  //relying_party: RelyingParty;
 }>()
   .section('mode', {
     defaults: 'access-proxy',
@@ -143,15 +136,26 @@ const options = ghii<{
         ),
       }),
   })
-  .section('cookie', {
+  .section('logLevel', {
+    defaults: 'info',
+    validator: joi =>
+      joi
+        .string()
+        .valid('debug', 'info', 'warn', 'error', 'silent')
+        .required(),
+  })
+  .section('headers', {
+    defaults: {
+      prefix: 'X-AUTH',
+    },
     validator: joi =>
       joi.object({
-        name: joi.string().required(),
-        keys: joi
-          .array()
-          .items(joi.string().required())
-          .min(1),
-        maxAge: joi.number().required(),
+        prefix: joi.string(),
+        proxy: joi
+          .object({})
+          .options({ allowUnknown: true })
+          .required(),
+        noProxy: joi.array().items(joi.string()),
       }),
   })
   .section('targets', {
@@ -214,56 +218,6 @@ const options = ghii<{
           liveness: joi.string().required(),
           timeout: joi.number(),
         }),
-      }),
-  })
-  .section('relying_party', {
-    validator: joi =>
-      joi.object({
-        on_success_redirect: joi.string().required(),
-        on_fail_redirect: joi.string().required(),
-        oidc_base_path: joi.string().required(),
-        oidc_paths: joi
-          .object({
-            login: joi.string().required(),
-            callback: joi.string().required(),
-          })
-          .required(),
-        rules: joi
-          .array()
-          .items(
-            joi
-              .object({
-                route: joi.string().required(),
-                methods: joi
-                  .array()
-                  .items(joi.string().required())
-                  .min(1),
-              })
-              .required()
-          )
-          .min(1),
-        logLevel: joi
-          .string()
-          .valid('debug', 'info', 'warn', 'error', 'silent')
-          .required(),
-        headers: joi
-          .object({
-            prefix: joi.string().required(),
-            proxy: joi
-              .object({
-                token: joi.string().required(),
-                expiresin: joi.string().required(),
-                subject: joi.string().required(),
-                username: joi.string().required(),
-                userid: joi.string().required(),
-                email: joi.string().required(),
-                'family-name': joi.string().required(),
-                'given-name': joi.string().required(),
-              })
-              .options({ allowUnknown: true })
-              .required(),
-          })
-          .required(),
       }),
   })
   .loader(packageJsonLoader({ target: 'app' }));

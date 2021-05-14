@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import opts from './options';
 import aemonOidcIntrospect from '@iad-os/aemon-oidc-introspect';
-import logger from '../utils/logger';
+import logger, { options } from '../utils/logger';
 import axios from 'axios';
 import pinoExpress from 'express-pino-logger';
 import revProxy from '../middlewares/rev-roxy';
@@ -17,11 +17,7 @@ const expressApp = express()
   .use(cors({ credentials: true }))
   // check docs https://github.com/expressjs/cors#configuration-options
   .use(compression())
-  .use(
-    pinoExpress({
-      prettyPrint: process.env.PRETTY_PRINT === 'true' ? true : false,
-    })
-  );
+  .use(pinoExpress(options));
 
 instrumentByMode(expressApp);
 

@@ -32,6 +32,10 @@ function revProxy({ upstream, routes, rewrite }: Targets): RequestHandler {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onProxyReq: (proxyReq, req, res) => {
+      options
+        .snapshot()
+        .headers.noProxy?.map(key => proxyReq.removeHeader(key));
+      proxyReq.removeHeader;
       const rpHeaders = proxyHeaders(req);
       rpHeaders.forEach(([name, value]) => {
         proxyReq.setHeader(name, value);
@@ -40,7 +44,7 @@ function revProxy({ upstream, routes, rewrite }: Targets): RequestHandler {
   };
 
   function proxyHeaders(req: Request) {
-    const { prefix, proxy } = options.snapshot().relying_party.headers;
+    const { prefix, proxy } = options.snapshot().headers;
     const headers = map(proxy, function(value, name) {
       return [`${prefix}-${name}`, get(req.uid, value, '')];
     });
